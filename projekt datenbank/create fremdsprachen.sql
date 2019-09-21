@@ -17,6 +17,28 @@ create table Benutzer
     Letzte_Aktivitaet date
 );
 
+-- Erstelle Tabelle sprachen
+create table Sprachen
+(
+    Sprachen_ID int NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    Bezeichnung varchar(20) NOT NULL
+);
+
+-- Erstelle Tabelle lernmodi
+create table Lernmodus
+(
+    Lernmodus_ID int NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    Titel varchar(20) NOT NULL,
+    Beschreibung varchar(200)
+);
+
+-- Erstelle Tabelle Kategorien
+create table Kategorien
+(
+    Kategorie_ID int NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    Kategorie varchar(20) NOT NULL
+);
+
 -- Erstelle Tabelle karteikarten
 create table Karteikarten
 (
@@ -29,13 +51,6 @@ create table Karteikarten
     REFERENCES Benutzer(Benutzer_ID),
     CONSTRAINT FK_SPRACHE_KARTE FOREIGN KEY (FK_Sprache)
     REFERENCES Sprachen(Sprachen_ID)
-);
-
--- Erstelle Tabelle sprachen
-create table Sprachen
-(
-    Sprachen_ID int NOT NULL AUTO_INCREMENT PRIMARY KEY,
-    Bezeichnung varchar(20) NOT NULL
 );
 
 -- Erstelle Tabelle bibliotheken
@@ -66,14 +81,6 @@ create table Bibliothek_to_Karte
     REFERENCES Bibliotheken(Eintrags_NR)
 );
 
--- Erstelle Tabelle lernmodi
-create table Lernmodus
-(
-    Lernmodus_ID int NOT NULL AUTO_INCREMENT PRIMARY KEY,
-    Titel varchar(20) NOT NULL,
-    Beschreibung varchar(200)
-);
-
 -- Erstelle Tabelle lueckentexte
 create table Uebungen
 (
@@ -86,17 +93,10 @@ create table Uebungen
     FK_Kategorie int NOT NULL,
     CONSTRAINT FK_SPRACHE_LUE FOREIGN KEY (FK_Sprache)
     REFERENCES Sprachen(Sprachen_ID),
-    CONSTRAINT FK_MODUS_LUE FOREIGN KEY (FK_Lernmodus)
+    CONSTRAINT FK_MODUS_UEBUNGEN FOREIGN KEY (FK_Lernmodus)
     REFERENCES Lernmodus(Lernmodus_ID),
-    CONSTRAINT FK_MODUS_LUE FOREIGN KEY (FK_Kategorie)
+    CONSTRAINT FK_UBUNGEN_KAT FOREIGN KEY (FK_Kategorie)
     REFERENCES Kategorien(Kategorie_ID)
-);
-
--- Erstelle Tabelle Kategorien
-create table Kategorien
-(
-    Kategorie_ID int NOT NULL AUTO_INCREMENT PRIMARY KEY,
-    Kategorie varchar(20) NOT NULL
 );
 
 -- Erstelle Tabelle Bibliothek_to_Lernmodus
