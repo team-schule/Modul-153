@@ -67,7 +67,6 @@ create table if not exists Bibliotheken
 (
     Eintrags_NR int NOT NULL AUTO_INCREMENT PRIMARY KEY,
     Titel varchar(20) NOT NULL,
-    Beschreibung varchar(50),
     Ebene int(2) NOT NULL,
     Position int(2) NOT NULL,
     FK_Benutzer int NOT NULL,
