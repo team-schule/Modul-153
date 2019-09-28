@@ -96,7 +96,7 @@ create table if not exists Uebungen
     Uebungs_NR int NOT NULL AUTO_INCREMENT PRIMARY KEY,
     Titel varchar(20),
     Aufgabe varchar(100) NOT NULL,
-    Loesung varchar(100),
+    Loesung varchar(100) NOT NULL,
     FK_Sprache int NOT NULL,
     FK_Lernmodus int NOT NULL,
     FK_Kategorie int NOT NULL,
