@@ -18,6 +18,8 @@ create table if not exists Benutzer
     Erfasst_am DATE NOT NULL DEFAULT current_date(),
     -- Bei Insert und Update wird das aktuelle Datetime gesetzt
     Letzte_Aktivitaet TIMESTAMP,
+    -- Bei Anrede soll nur Herr oder Frau möglich sein
+    CONSTRAINT CHECK_ANREDE check (Anrede in ('Herr','Frau')),
     -- Passwort muss eine Länge zwischen 8 und 12 Zeichen haben
     CONSTRAINT CHECK_PW check (CHAR_LENGTH (Passwort) >= 8 and CHAR_LENGTH (Passwort) <= 12),
     -- Email muss Format erfüllen: Mindestens -> 3Stellen + @ + 3Stellen + . + 2Stellen
