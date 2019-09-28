@@ -1,31 +1,38 @@
 -- Erstelle Datenbank fremdsprachen
-create DATABASE fremdsprachen;
+create database if not exists fremdsprachen; 
 
 -- use database
 use fremdsprachen;
 
--- Erstelle Tabelle benutzer
-create table Benutzer
+-- Erstelle Tabelle Benutzer
+create table if not exists Benutzer
 (
     Benutzer_ID int NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    Anrede varchar(5) NOT NULL,
     Vorname varchar(30) NOT NULL,
     Nachname varchar(30) NOT NULL,
     Email varchar(50) NOT NULL,
     Benutzername varchar(30) NOT NULL,
     Passwort varchar(50) NOT NULL,
-    Erfasst_am date,
-    Letzte_Aktivitaet date
-);
+    -- Beim Insert wird das aktuelle Datum gesetzt
+    Erfasst_am DATE NOT NULL DEFAULT current_date(),
+    -- Bei Insert und Update wird das aktuelle Datetime gesetzt
+    Letzte_Aktivitaet TIMESTAMP,
+    -- Passwort muss eine Länge zwischen 8 und 12 Zeichen haben
+    CONSTRAINT CHECK_PW check (CHAR_LENGTH (Passwort) >= 8 and CHAR_LENGTH (Passwort) <= 12),
+    -- Email muss Format erfüllen: Mindestens -> 3Stellen + @ + 3Stellen + . + 2Stellen
+    CONSTRAINT CHECK_EMAIL check (Email like '%___@___%.__%')
+); 
 
--- Erstelle Tabelle sprachen
-create table Sprachen
+-- Erstelle Tabelle Sprachen
+create table if not exists Sprachen
 (
     Sprachen_ID int NOT NULL AUTO_INCREMENT PRIMARY KEY,
     Bezeichnung varchar(20) NOT NULL
 );
 
--- Erstelle Tabelle lernmodi
-create table Lernmodus
+-- Erstelle Tabelle Lernmodus
+create table if not exists Lernmodus
 (
     Lernmodus_ID int NOT NULL AUTO_INCREMENT PRIMARY KEY,
     Titel varchar(20) NOT NULL,
@@ -33,14 +40,14 @@ create table Lernmodus
 );
 
 -- Erstelle Tabelle Kategorien
-create table Kategorien
+create table if not exists Kategorien
 (
     Kategorie_ID int NOT NULL AUTO_INCREMENT PRIMARY KEY,
     Kategorie varchar(20) NOT NULL
 );
 
--- Erstelle Tabelle karteikarten
-create table Karteikarten
+-- Erstelle Tabelle Karteikarten
+create table if not exists Karteikarten
 (
     Karten_NR int NOT NULL AUTO_INCREMENT PRIMARY KEY,
     Vorderseite varchar(100),
@@ -53,8 +60,8 @@ create table Karteikarten
     REFERENCES Sprachen(Sprachen_ID)
 );
 
--- Erstelle Tabelle bibliotheken
-create table Bibliotheken
+-- Erstelle Tabelle Bibliotheken
+create table if not exists Bibliotheken
 (
     Eintrags_NR int NOT NULL AUTO_INCREMENT PRIMARY KEY,
     Titel varchar(20) NOT NULL,
@@ -69,8 +76,8 @@ create table Bibliotheken
     REFERENCES Lernmodus(Lernmodus_ID)
 );
 
--- Erstelle Tabelle verbindungen
-create table Bibliothek_to_Karte
+-- Erstelle Tabelle Bibliothek_to_Karte
+create table if not exists Bibliothek_to_Karte
 (
     Verbindungs_NR int NOT NULL AUTO_INCREMENT PRIMARY KEY,
     FK_Karte int NOT NULL,
@@ -81,8 +88,8 @@ create table Bibliothek_to_Karte
     REFERENCES Bibliotheken(Eintrags_NR)
 );
 
--- Erstelle Tabelle lueckentexte
-create table Uebungen
+-- Erstelle Tabelle Uebungen
+create table if not exists Uebungen
 (
     Uebungs_NR int NOT NULL AUTO_INCREMENT PRIMARY KEY,
     Titel varchar(20),
@@ -100,7 +107,7 @@ create table Uebungen
 );
 
 -- Erstelle Tabelle Bibliothek_to_Lernmodus
-create table Bibliothek_to_Lernmodus
+create table if not exists Bibliothek_to_Lernmodus
 (
     Verbindungs_NR int NOT NULL AUTO_INCREMENT PRIMARY KEY,
     FK_Bibliothek int NOT NULL,
