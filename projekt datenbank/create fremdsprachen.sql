@@ -67,6 +67,7 @@ create table if not exists Bibliotheken
 (
     Eintrags_NR int NOT NULL AUTO_INCREMENT PRIMARY KEY,
     Titel varchar(20) NOT NULL,
+    Beschreibung varchar(20) NOT NULL,
     Ebene int(2) NOT NULL,
     Position int(2) NOT NULL,
     FK_Benutzer int NOT NULL,
@@ -108,14 +109,14 @@ create table if not exists Uebungen
 );
 
 -- Erstelle Tabelle Bibliothek_to_Lernmodus
-create table if not exists Bibliothek_to_Lernmodus
-(
-    Verbindungs_NR int NOT NULL AUTO_INCREMENT PRIMARY KEY,
-    FK_Bibliothek int NOT NULL,
-    FK_Lernmodus int NOT NULL,
-    CONSTRAINT FK_LERNMODUS_BIBLIOTHEK FOREIGN KEY (FK_Bibliothek)
-    REFERENCES Bibliotheken(Eintrags_NR),
-    CONSTRAINT FK_BIBLOTHEK_LERNMODUS FOREIGN KEY (FK_Lernmodus)
-    REFERENCES Lernmodus(Lernmodus_ID)
-);
+-- create table if not exists Bibliothek_to_Lernmodus
+-- (
+ --   Verbindungs_NR int NOT NULL AUTO_INCREMENT PRIMARY KEY,
+ --   FK_Bibliothek int NOT NULL,
+ --   FK_Lernmodus int NOT NULL,
+ --   CONSTRAINT FK_LERNMODUS_BIBLIOTHEK FOREIGN KEY (FK_Bibliothek)
+ --   REFERENCES Bibliotheken(Eintrags_NR),
+ --   CONSTRAINT FK_BIBLOTHEK_LERNMODUS FOREIGN KEY (FK_Lernmodus)
+ --   REFERENCES Lernmodus(Lernmodus_ID)
+-- );
 
