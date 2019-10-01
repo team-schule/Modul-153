@@ -11,7 +11,10 @@ create table if not exists Benutzer
     Anrede varchar(5) NOT NULL,
     Vorname varchar(30) NOT NULL,
     Nachname varchar(30) NOT NULL,
-    Email varchar(50) NOT NULL,
+    -- Email darf nur einmal in der Tabelle vorkommen 
+    -- (Benutzeridentifizierung) 
+    -- -> so sind keine doppelten Einträge möglich eines Benutzers
+    Email varchar(50) NOT NULL UNIQUE,
     Benutzername varchar(30) NOT NULL,
     Passwort varchar(50) NOT NULL,
     -- Beim Insert wird das aktuelle Datum gesetzt
@@ -56,8 +59,10 @@ create table if not exists Karteikarten
     Rueckseite varchar(100),
     FK_Benutzer int,
     FK_Sprache int,
+    -- Dem Benutzer zugehörige Karten sollen beim Löschen 
+    -- eines Benutzers auch gelöscht werden
     CONSTRAINT FK_BENUTZER_KARTE FOREIGN KEY (FK_Benutzer)
-    REFERENCES Benutzer(Benutzer_ID),
+    REFERENCES Benutzer(Benutzer_ID) on delete CASCADE,
     CONSTRAINT FK_SPRACHE_KARTE FOREIGN KEY (FK_Sprache)
     REFERENCES Sprachen(Sprachen_ID)
 );
@@ -67,15 +72,18 @@ create table if not exists Bibliotheken
 (
     Eintrags_NR int NOT NULL AUTO_INCREMENT PRIMARY KEY,
     Titel varchar(20) NOT NULL,
-    Beschreibung varchar(20) NOT NULL,
     Ebene int(2) NOT NULL,
     Position int(2) NOT NULL,
     FK_Benutzer int NOT NULL,
-    FK_Lernmodus int NOT NULL,
+    -- FK zur Erstellung des Menübaumes
+    -- Es wird immer der Schlüssel der oberen Ebene angegeben (Ausser bei der obersten)
+    FK_Bibliothek int,
+    -- Dem Benutzer zugehörige Bibliotheken sollen beim Löschen 
+    -- eines Benutzers auch gelöscht werden
     CONSTRAINT FK_BENUTZER_BIBLIOTHEK FOREIGN KEY (FK_Benutzer)
-    REFERENCES Benutzer(Benutzer_ID),
-    CONSTRAINT FK_BIBLIOTHEK_LERNMODUS_ FOREIGN KEY (FK_Lernmodus)
-    REFERENCES Lernmodus(Lernmodus_ID)
+    REFERENCES Benutzer(Benutzer_ID) on delete CASCADE,
+    CONSTRAINT FK_BIBLIOTHEK_BIBLIOTHEK FOREIGN KEY (FK_Bibliothek)
+    REFERENCES Bibliotheken(Eintrags_NR) 
 );
 
 -- Erstelle Tabelle Bibliothek_to_Karte
@@ -86,8 +94,10 @@ create table if not exists Bibliothek_to_Karte
     FK_Bibliothek int NOT NULL,
     CONSTRAINT FK_VERB_KARTE FOREIGN KEY (FK_Karte)
     REFERENCES Karteikarten(Karten_NR),
+    -- Dem Benutzer zugehörige Bibliotheken sollen beim Löschen 
+    -- eines Benutzers auch gelöscht werden
     CONSTRAINT FK_VERB_BIBLIOTHEK FOREIGN KEY (FK_Bibliothek)
-    REFERENCES Bibliotheken(Eintrags_NR)
+    REFERENCES Bibliotheken(Eintrags_NR) on delete CASCADE
 );
 
 -- Erstelle Tabelle Uebungen
@@ -109,14 +119,28 @@ create table if not exists Uebungen
 );
 
 -- Erstelle Tabelle Bibliothek_to_Lernmodus
--- create table if not exists Bibliothek_to_Lernmodus
--- (
- --   Verbindungs_NR int NOT NULL AUTO_INCREMENT PRIMARY KEY,
- --   FK_Bibliothek int NOT NULL,
- --   FK_Lernmodus int NOT NULL,
- --   CONSTRAINT FK_LERNMODUS_BIBLIOTHEK FOREIGN KEY (FK_Bibliothek)
- --   REFERENCES Bibliotheken(Eintrags_NR),
- --   CONSTRAINT FK_BIBLOTHEK_LERNMODUS FOREIGN KEY (FK_Lernmodus)
- --   REFERENCES Lernmodus(Lernmodus_ID)
--- );
+create table if not exists Bibliothek_to_Lernmodus
+(
+  Verbindungs_NR int NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  FK_Bibliothek int NOT NULL,
+  FK_Lernmodus int NOT NULL,
+  -- Dem Benutzer zugehörige Bibliotheken sollen beim Löschen 
+  -- eines Benutzers auch gelöscht werden
+  CONSTRAINT FK_LERNMODUS_BIBLIOTHEK FOREIGN KEY (FK_Bibliothek)
+  REFERENCES Bibliotheken(Eintrags_NR) on delete CASCADE,
+  CONSTRAINT FK_BIBLOTHEK_LERNMODUS FOREIGN KEY (FK_Lernmodus)
+  REFERENCES Lernmodus(Lernmodus_ID)
+);
 
+-- ==================================================================================================
+-- Erstellung der Trigger
+
+-- Trigger AFTER_INSERT_BENUTZER
+-- Erstellt bei neuem Eintrag in der Tabelle benutzer 
+-- einen Eintrag Bibliothek in der Tabelle bibliotheken
+CREATE TRIGGER `AFTER_INSERT_BENUTZER` AFTER INSERT ON `benutzer` 
+FOR EACH ROW 
+INSERT INTO bibliotheken(Titel, Ebene, Position, FK_Benutzer) 
+VALUES ('Bibliothek',1,1,new.Benutzer_ID);
+
+-- ==================================================================================================
