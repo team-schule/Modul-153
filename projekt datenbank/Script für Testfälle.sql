@@ -1,15 +1,11 @@
 -- ===============================================================================================
 -- Ein Benutzer soll nur einmal erfasst werden können!
--- Es soll bei der Registrierung eines neuen Benutzers geprüft werden, ob ein schon ein 
--- Benutzer mit dieser E-Mail-Adresse existiert oder ob der Benutzername schon vergeben ist
+-- Die Identifizierung läuft über die E-Mail-Adresse, so kann ein Benutzer mehrmals registriert 
+-- sein über eine andere E-Mail-Adresse
 
--- Benutzer mit dieser E-Mail-Adresse existiert bereits
+-- Dieser Benutzer existiert bereits genauso und darf kein zweites Mal erstellt werden
 INSERT INTO benutzer(Anrede, Vorname, Nachname, Email, Benutzername, Passwort) 
-VALUES ('Frau','Angelina','Hofer','angel-sahara@hotmail.com','Angelina','Angi1234Angi');
-
--- Es existiert bereits ein Benutzer mit diesem Benutzernamen
-INSERT INTO benutzer(Anrede, Vorname, Nachname, Email, Benutzername, Passwort) 
-VALUES ('Frau','Angelina','Hofer','angelina.hofer@abf.ch','Angeli','Angi1234Angi');
+VALUES ('Frau','Angelina','Hofer','angel-sahara@hotmail.com','Angeli','Angi1234Angi');
 -- ================================================================================================
 
 

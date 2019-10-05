@@ -15,12 +15,12 @@ create table if not exists Benutzer
     -- (Benutzeridentifizierung) 
     -- -> so sind keine doppelten Einträge möglich eines Benutzers
     Email varchar(50) NOT NULL UNIQUE,
-    Benutzername varchar(30) NOT NULL UNIQUE,
+    Benutzername varchar(30) NOT NULL,
     Passwort varchar(50) NOT NULL,
     -- Beim Insert wird das aktuelle Datum gesetzt
     Erfasst_am DATE NOT NULL DEFAULT current_date(),
     -- Bei Insert und Update wird das aktuelle Datetime gesetzt
-    Letzte_Aktivitaet on update TIMESTAMP,
+    Letzte_Aktivitaet TIMESTAMP,
     -- Bei Anrede soll nur Herr oder Frau möglich sein
     CONSTRAINT CHECK_ANREDE check (Anrede in ('Herr','Frau')),
     -- Passwort muss eine Länge zwischen 8 und 12 Zeichen haben
