@@ -92,57 +92,57 @@ VALUES ('Apfel','apple',3,2);
 -- INSERT INTO bibliotheken(Titel, Ebene, Position, FK_Benutzer) 
 -- VALUES ('Bibliothek','Bibliothek',1,1,1); -- 1
 -- Sprache Französisch
-INSERT INTO bibliotheken(Titel, Ebene, Position, FK_Benutzer, FK_Bibliothek) 
-VALUES ('Französisch',2,1,1,1); -- 2
-INSERT INTO bibliotheken(Titel, Ebene, Position, FK_Benutzer, FK_Bibliothek) 
-VALUES ('Essen',3,1,1,2); -- 3
-INSERT INTO bibliotheken(Titel, Ebene, Position, FK_Benutzer, FK_Bibliothek) 
-VALUES ('Begrüssung',3,2,1,2); -- 4
-INSERT INTO bibliotheken(Titel, Ebene, Position, FK_Benutzer, FK_Bibliothek) 
-VALUES ('Lückentexte',3,3,1,2); -- 5
+INSERT INTO bibliotheken(Titel, Ebene, Position, FK_Benutzer, FK_Bibliothek, FK_Sprache) 
+VALUES ('Französisch',2,1,1,1,2); -- 2
+INSERT INTO bibliotheken(Titel, Ebene, Position, FK_Benutzer, FK_Bibliothek, FK_Sprache) 
+VALUES ('Essen',3,1,1,4,2); -- 3
+INSERT INTO bibliotheken(Titel, Ebene, Position, FK_Benutzer, FK_Bibliothek, FK_Sprache) 
+VALUES ('Begrüssung',3,2,1,4,2); -- 4
+INSERT INTO bibliotheken(Titel, Ebene, Position, FK_Benutzer, FK_Bibliothek, FK_Sprache) 
+VALUES ('Lückentexte',3,3,1,4,2); -- 5
 -- und Italienisch
-INSERT INTO bibliotheken(Titel, Ebene, Position, FK_Benutzer, FK_Bibliothek) 
-VALUES ('Italienisch',2,2,1,1); -- 6
-INSERT INTO bibliotheken(Titel, Ebene, Position, FK_Benutzer, FK_Bibliothek) 
-VALUES ('Wetter',3,1,1,6); -- 7
-INSERT INTO bibliotheken(Titel, Ebene, Position, FK_Benutzer, FK_Bibliothek) 
-VALUES ('Körper',3,2,1,6); -- 8
-INSERT INTO bibliotheken(Titel, Ebene, Position, FK_Benutzer, FK_Bibliothek) 
-VALUES ('Grammatik',3,3,1,6); -- 9
+INSERT INTO bibliotheken(Titel, Ebene, Position, FK_Benutzer, FK_Bibliothek, FK_Sprache) 
+VALUES ('Italienisch',2,2,1,1,3); -- 6
+INSERT INTO bibliotheken(Titel, Ebene, Position, FK_Benutzer, FK_Bibliothek, FK_Sprache) 
+VALUES ('Wetter',3,1,1,8,3); -- 7
+INSERT INTO bibliotheken(Titel, Ebene, Position, FK_Benutzer, FK_Bibliothek, FK_Sprache) 
+VALUES ('Körper',3,2,1,8,3); -- 8
+INSERT INTO bibliotheken(Titel, Ebene, Position, FK_Benutzer, FK_Bibliothek, FK_Sprache) 
+VALUES ('Grammatik',3,3,1,8,3); -- 9
 
 -- Bibliothek Benutzer 2
 -- Überschrift Bibliothek
 -- INSERT INTO bibliotheken(Titel, Ebene, Position, FK_Benutzer) 
 -- VALUES ('Bibliothek','Bibliothek',1,1,2); -- 10
 -- Sprache Italienisch
-INSERT INTO bibliotheken(Titel, Ebene, Position, FK_Benutzer, FK_Bibliothek) 
-VALUES ('Italienisch',2,1,2,10); -- 11
-INSERT INTO bibliotheken(Titel, Ebene, Position, FK_Benutzer, FK_Bibliothek) 
-VALUES ('Essen',3,1,2,11); -- 12
-INSERT INTO bibliotheken(Titel, Ebene, Position, FK_Benutzer, FK_Bibliothek) 
-VALUES ('Begrüssung',3,2,2,11); -- 13
-INSERT INTO bibliotheken(Titel, Ebene, Position, FK_Benutzer, FK_Bibliothek) 
-VALUES ('Lückentexte',3,3,2,11); -- 14
-INSERT INTO bibliotheken(Titel, Ebene, Position, FK_Benutzer, FK_Bibliothek) 
-VALUES ('Schreiben',3,4,2,11); -- 15
+INSERT INTO bibliotheken(Titel, Ebene, Position, FK_Benutzer, FK_Bibliothek, FK_Sprache) 
+VALUES ('Italienisch',2,1,2,2,3); -- 11
+INSERT INTO bibliotheken(Titel, Ebene, Position, FK_Benutzer, FK_Bibliothek, FK_Sprache) 
+VALUES ('Essen',3,1,2,12,3); -- 12
+INSERT INTO bibliotheken(Titel, Ebene, Position, FK_Benutzer, FK_Bibliothek, FK_Sprache) 
+VALUES ('Begrüssung',3,2,2,12,3); -- 13
+INSERT INTO bibliotheken(Titel, Ebene, Position, FK_Benutzer, FK_Bibliothek, FK_Sprache) 
+VALUES ('Lückentexte',3,3,2,12,3); -- 14
+INSERT INTO bibliotheken(Titel, Ebene, Position, FK_Benutzer, FK_Bibliothek, FK_Sprache) 
+VALUES ('Schreiben',3,4,2,12,3); -- 15
 
 -- Bibliothek Benutzer 3
 -- Überschrift Bibliothek
 -- INSERT INTO bibliotheken(Titel, Ebene, Position, FK_Benutzer) 
 -- VALUES ('Bibliothek','Bibliothek',1,1,3); -- 16
 -- Sprache Englisch
-INSERT INTO bibliotheken(Titel, Ebene, Position, FK_Benutzer, FK_Bibliothek) 
-VALUES ('Englisch',2,1,3,16); -- 17
-INSERT INTO bibliotheken(Titel, Ebene, Position, FK_Benutzer, FK_Bibliothek) 
-VALUES ('Essen',3,1,3,17); -- 18
-INSERT INTO bibliotheken(Titel, Ebene, Position, FK_Benutzer, FK_Bibliothek) 
-VALUES ('Begrüssung',3,2,3,17); -- 19
-INSERT INTO bibliotheken(Titel, Ebene, Position, FK_Benutzer, FK_Bibliothek) 
-VALUES ('Lückentexte',3,3,3,17); -- 20
-INSERT INTO bibliotheken(Titel, Ebene, Position, FK_Benutzer, FK_Bibliothek) 
-VALUES ('Grammatik',3,4,3,17); -- 21
-INSERT INTO bibliotheken(Titel, Ebene, Position, FK_Benutzer, FK_Bibliothek) 
-VALUES ('Schreiben',3,5,3,17); -- 22
+INSERT INTO bibliotheken(Titel, Ebene, Position, FK_Benutzer, FK_Bibliothek, FK_Sprache) 
+VALUES ('Englisch',2,1,3,3,1); -- 17
+INSERT INTO bibliotheken(Titel, Ebene, Position, FK_Benutzer, FK_Bibliothek, FK_Sprache) 
+VALUES ('Essen',3,1,3,17,1); -- 18
+INSERT INTO bibliotheken(Titel, Ebene, Position, FK_Benutzer, FK_Bibliothek, FK_Sprache) 
+VALUES ('Begrüssung',3,2,3,17,1); -- 19
+INSERT INTO bibliotheken(Titel, Ebene, Position, FK_Benutzer, FK_Bibliothek, FK_Sprache) 
+VALUES ('Lückentexte',3,3,3,17,1); -- 20
+INSERT INTO bibliotheken(Titel, Ebene, Position, FK_Benutzer, FK_Bibliothek, FK_Sprache) 
+VALUES ('Grammatik',3,4,3,17,1); -- 21
+INSERT INTO bibliotheken(Titel, Ebene, Position, FK_Benutzer, FK_Bibliothek, FK_Sprache) 
+VALUES ('Schreiben',3,5,3,17,1); -- 22
 -- Ende Insert Tabelle Bibliotheken --------------------------------------------
 
 

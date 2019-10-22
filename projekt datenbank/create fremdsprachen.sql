@@ -78,12 +78,15 @@ create table if not exists Bibliotheken
     -- FK zur Erstellung des Menübaumes
     -- Es wird immer der Schlüssel der oberen Ebene angegeben (Ausser bei der obersten)
     FK_Bibliothek int,
+    FK_Sprache int,
     -- Dem Benutzer zugehörige Bibliotheken sollen beim Löschen 
     -- eines Benutzers auch gelöscht werden
     CONSTRAINT FK_BENUTZER_BIBLIOTHEK FOREIGN KEY (FK_Benutzer)
     REFERENCES Benutzer(Benutzer_ID) on delete CASCADE,
     CONSTRAINT FK_BIBLIOTHEK_BIBLIOTHEK FOREIGN KEY (FK_Bibliothek)
-    REFERENCES Bibliotheken(Eintrags_NR) 
+    REFERENCES Bibliotheken(Eintrags_NR),
+    CONSTRAINT FK_BIBLIOTHEK_SPRACHE FOREIGN KEY (FK_Sprache)
+    REFERENCES Sprachen(Sprachen_ID) 
 );
 
 -- Erstelle Tabelle Bibliothek_to_Karte
@@ -144,3 +147,13 @@ INSERT INTO bibliotheken(Titel, Ebene, Position, FK_Benutzer)
 VALUES ('Bibliothek',1,1,new.Benutzer_ID);
 
 -- ==================================================================================================
+
+-- Trigger AFTER_INSERT_BIBLIOTHEK
+-- Soll bei einem neuen Eintrag in der Bibliothek die Felder
+
+
+-- ==================================================================================================
+-- Folgender Gedanke zum Ablauf einer Neu-Erfassung eines Eintrages in der Bibliothek:
+-- 1. Sprache auswählen (Vorgegeben, es sind nur Sprachen Möglich, welche in der Bibliothek gespeichert sind)
+-- 2. Auswahl "neu" oder "bestehendem Eintrag hinzufügen"
+-- 3. 
