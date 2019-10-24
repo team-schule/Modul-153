@@ -84,7 +84,7 @@ create table if not exists Bibliotheken
     CONSTRAINT FK_BENUTZER_BIBLIOTHEK FOREIGN KEY (FK_Benutzer)
     REFERENCES Benutzer(Benutzer_ID) on delete CASCADE,
     CONSTRAINT FK_BIBLIOTHEK_BIBLIOTHEK FOREIGN KEY (FK_Bibliothek)
-    REFERENCES Bibliotheken(Eintrags_NR),
+    REFERENCES Bibliotheken(Eintrags_NR) on delete CASCADE,
     CONSTRAINT FK_BIBLIOTHEK_SPRACHE FOREIGN KEY (FK_Sprache)
     REFERENCES Sprachen(Sprachen_ID) 
 );
@@ -141,10 +141,13 @@ create table if not exists Bibliothek_to_Lernmodus
 -- Trigger AFTER_INSERT_BENUTZER
 -- Erstellt bei neuem Eintrag in der Tabelle benutzer 
 -- einen Eintrag Bibliothek in der Tabelle bibliotheken
-CREATE TRIGGER `AFTER_INSERT_BENUTZER` AFTER INSERT ON `benutzer` 
+DELIMITER |
+CREATE OR REPLACE TRIGGER `AFTER_INSERT_BENUTZER` AFTER INSERT ON `benutzer` 
 FOR EACH ROW 
 INSERT INTO bibliotheken(Titel, Ebene, Position, FK_Benutzer) 
 VALUES ('Bibliothek',1,1,new.Benutzer_ID);
+UPDATE benutzer SET Passwort = sha1(new.Passwort) where Benutzer_ID = new.Benutzer_ID;
+| DELIMITER;
 
 -- ==================================================================================================
 
