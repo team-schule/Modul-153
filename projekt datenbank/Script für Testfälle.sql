@@ -23,3 +23,18 @@ VALUES ('Frau','Marianne','Hürlimann','m.hmann@hotmail.com','Sybille','SuperMam
 -- ob auch nur dieser Eintrag vorhanden ist!
 select * from bibliotheken where FK_BENUTZER = 4;
 -- ===============================================================================================
+
+-- ===============================================================================================
+-- Anzeige der Rechte der Benutzer
+-- Da das Testen der Rechte nur durch die Anmeldung über ein GUI (Webseite) oder durch Anmeldung
+-- als entsprechender User auf der Datenbank, haben wir zur Veranschaulichung der Rechte
+-- als erste Prüfung hier eine Abfrage dafür bereit gemacht. Wirklich testen kann man diese jedoch 
+-- nur, wenn man als dieser User auf der Datenbank eingeloggt ist.
+--------------------------------------------------------------------------------------------------
+-- Abfrage für den Benutzer lernende@localhost mit passwort 'fremdsprachen'
+SHOW GRANTS FOR lernende@localhost;
+
+-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
+-- Abfrage für den Benutzer adminfremdsprachen@localhost mit passwort 'AdministratorFSP'
+SHOW GRANTS FOR adminfremdsprachen@localhost;
+-- ===============================================================================================
