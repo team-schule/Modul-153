@@ -187,10 +187,6 @@ FOR EACH ROW
 BEGIN
     INSERT INTO bibliotheken(Titel, Ebene, Position, FK_Benutzer) 
     VALUES ('Bibliothek',1,1,new.Benutzer_ID);
-    INSERT INTO bibliotheken(Titel, Ebene, Position, FK_Benutzer) 
-    VALUES ('Englisch',2,1,new.Benutzer_ID);
-    -- INSERT INTO karteikarten(Vorderseite, Rueckseite, FK_Benutzer, FK_Sprache)
-    -- VALUES ('Willkommen','Welcome',new.Benutzer_ID,2);
 END  // 
 DELIMITER  ;
 -- ---------------------------------------------------------------------
