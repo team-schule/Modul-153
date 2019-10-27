@@ -183,12 +183,14 @@ create table if not exists Bibliothek_to_Lernmodus
 -- Erstellt bei neuem Eintrag in der Tabelle benutzer 
 -- einen Eintrag Bibliothek in der Tabelle bibliotheken,
 -- welcher als Beispiel dient
+DELIMITER  //
 CREATE TRIGGER `AFTER_INSERT_BENUTZER` AFTER INSERT ON `benutzer` 
 FOR EACH ROW 
 BEGIN
     INSERT INTO bibliotheken(Titel, Ebene, Position, FK_Benutzer) 
     VALUES ('Bibliothek',1,1,new.Benutzer_ID);
-END;
+END  // 
+DELIMITER  ;
 -- ---------------------------------------------------------------------
 -- Trigger AFTER_INSERT_KARTEIKARTEN
 -- FK_Sprache_Karte ist gleich der Sprache in der Bibliothek
