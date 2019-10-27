@@ -56,7 +56,7 @@ create table if not exists Benutzer
     -- (Benutzeridentifizierung) 
     -- -> so sind keine doppelten Einträge möglich eines Benutzers
     Email varchar(50) NOT NULL UNIQUE,
-    Benutzername varchar(30) NOT NULL,
+    Benutzername varchar(30) NOT NULL UNIQUE,
     Passwort varchar(50) NOT NULL,
     -- Beim Insert wird das aktuelle Datum gesetzt
     Erfasst_am DATE NOT NULL DEFAULT current_date(),
@@ -105,7 +105,7 @@ create table if not exists Karteikarten
     CONSTRAINT FK_BENUTZER_KARTE FOREIGN KEY (FK_Benutzer)
     REFERENCES Benutzer(Benutzer_ID) on delete CASCADE,
     CONSTRAINT FK_SPRACHE_KARTE FOREIGN KEY (FK_Sprache)
-    REFERENCES Sprachen(Sprachen_ID)
+    REFERENCES Sprachen(Sprachen_ID) 
 );
 
 -- Erstelle Tabelle Bibliotheken
@@ -125,7 +125,7 @@ create table if not exists Bibliotheken
     CONSTRAINT FK_BENUTZER_BIBLIOTHEK FOREIGN KEY (FK_Benutzer)
     REFERENCES Benutzer(Benutzer_ID) on delete CASCADE,
     CONSTRAINT FK_BIBLIOTHEK_BIBLIOTHEK FOREIGN KEY (FK_Bibliothek)
-    REFERENCES Bibliotheken(Eintrags_NR),
+    REFERENCES Bibliotheken(Eintrags_NR)on delete CASCADE,
     CONSTRAINT FK_BIBLIOTHEK_SPRACHE FOREIGN KEY (FK_Sprache)
     REFERENCES Sprachen(Sprachen_ID) 
 );
@@ -181,11 +181,25 @@ create table if not exists Bibliothek_to_Lernmodus
 -- ---------------------------------------------------------------------
 -- Trigger AFTER_INSERT_BENUTZER
 -- Erstellt bei neuem Eintrag in der Tabelle benutzer 
--- einen Eintrag Bibliothek in der Tabelle bibliotheken
+-- einen Eintrag Bibliothek in der Tabelle bibliotheken,
+-- welcher als Beispiel dient
+DELIMITER  //
 CREATE TRIGGER `AFTER_INSERT_BENUTZER` AFTER INSERT ON `benutzer` 
 FOR EACH ROW 
-INSERT INTO bibliotheken(Titel, Ebene, Position, FK_Benutzer) 
-VALUES ('Bibliothek',1,1,new.Benutzer_ID);
+BEGIN
+    INSERT INTO bibliotheken(Titel, Ebene, Position, FK_Benutzer) 
+    VALUES ('Bibliothek',1,1,new.Benutzer_ID);
+    INSERT INTO bibliotheken(Titel, Ebene, Position, FK_Benutzer) 
+    VALUES ('Englisch',2,1,new.Benutzer_ID);
+    -- INSERT INTO karteikarten(Vorderseite, Rueckseite, FK_Benutzer, FK_Sprache)
+    -- VALUES ('Willkommen','Welcome',new.Benutzer_ID,2);
+END  // 
+DELIMITER  ;
+-- ---------------------------------------------------------------------
+-- Trigger AFTER_INSERT_KARTEIKARTEN
+-- FK_Sprache_Karte ist gleich der Sprache in der Bibliothek
+--
+
 
 -- =====================================================================
 -- 4. Erstellung der Views
@@ -202,35 +216,49 @@ VALUES ('Bibliothek',1,1,new.Benutzer_ID);
 -- 6. Erstellung der Benutzer (User) 
 -- ---------------------------------------------------------------------
 
+-- Administrator für die Datenbank 'fremdsprachen'
+-- Dieser User hat nur auf diese Datenbank Zugriff, hat dafür aber 
+-- alle Rechte
+CREATE USER adminfremdsprachen@localhost IDENTIFIED BY 'AdministratorFSP';
+FLUSH PRIVILEGES;
+
+GRANT ALL PRIVILEGES ON fremdsprachen . * TO adminfremdsprachen@localhost;
+--  -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
+
+-- User, welcher beim normalen Login auf der Webseite benutzt wird
 -- User 'lernende' erstellen mit passwort fremdsprachen
 CREATE USER lernende@localhost IDENTIFIED BY 'fremdsprachen'; 
+FLUSH PRIVILEGES;
 
 -- Rechte für Tabelle benutzer
 GRANT 
-SELECT (Anrede, Vorname, Nachname, Email, Benutzername, Passwort),
+SELECT,
 INSERT (Anrede, Vorname, Nachname, Email, Benutzername, Passwort), 
 UPDATE (Anrede, Vorname, Nachname, Email, Benutzername, Passwort), 
 DELETE 
 ON fremdsprachen.benutzer 
 TO lernende@localhost;
+FLUSH PRIVILEGES;
 
 -- Rechte für Tabelle karteikarten
 GRANT 
-SELECT (Vorderseite, Rueckseite), 
+SELECT, 
 INSERT (Vorderseite, Rueckseite), 
 UPDATE (Vorderseite, Rueckseite), 
 DELETE
 ON fremdsprachen.karteikarten 
 TO lernende@localhost;
+FLUSH PRIVILEGES;
 
 -- Rechte für Tabelle bibliotheken
 GRANT 
-SELECT (Titel, Ebene, Position), 
+SELECT, 
 INSERT (Titel, Ebene, Position), 
 UPDATE (Titel, Ebene, Position), 
 DELETE
 ON fremdsprachen.bibliotheken 
 TO lernende@localhost;
+FLUSH PRIVILEGES;
 
 -- =====================================================================
 -- 7. Füllen der Datenbank mit Testdaten 
@@ -243,9 +271,9 @@ use fremdsprachen;
 INSERT INTO benutzer(Anrede, Vorname, Nachname, Email, Benutzername, Passwort) 
 VALUES ('Frau','Angelina','Hofer','angel-sahara@hotmail.com','Angeli','Angi1234Angi');
 INSERT INTO benutzer(Anrede, Vorname, Nachname, Email, Benutzername, Passwort) 
-VALUES ('Herr','Patrick','Tomasi','patrick.tomasi@gmx.ch','Päddy','5678PDXYZ');
+VALUES ('Herr','Patrick','Tomasi','patrick.tomasi@gmx.ch','Paeddy','5678PDXYZ');
 INSERT INTO benutzer(Anrede, Vorname, Nachname, Email, Benutzername, Passwort) 
-VALUES ('Herr','Matthias','Düggelin','nex.nex@gmx.ch','NexNex','159159Nix');
+VALUES ('Herr','Matthias','Dueggelin','nex.nex@gmx.ch','NexNex','159159Nix');
 
 
 -- Insert für Tabelle Sprachen
@@ -263,8 +291,6 @@ VALUES ('Griechisch');
 INSERT INTO sprachen(Bezeichnung) 
 VALUES ('Türkisch');
 
-
-
 -- Insert für Tabelle Lernmodus
 -- Mögliche Lernmodi stehen dem Benutzer nur zur Auswahl zur Verfügung
 -- Er kann diese nicht ändern
@@ -274,7 +300,6 @@ INSERT INTO lernmodus(Titel, Beschreibung)
 VALUES ('Grammatik','');
 INSERT INTO lernmodus(Titel, Beschreibung) 
 VALUES ('Schreiben','');
-
 
 -- Insert für Tabelle Kategorien
 INSERT INTO kategorien(Kategorie) 
