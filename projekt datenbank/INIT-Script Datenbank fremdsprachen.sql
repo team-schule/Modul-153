@@ -57,15 +57,13 @@ create table if not exists Benutzer
     -- -> so sind keine doppelten Einträge möglich eines Benutzers
     Email varchar(50) NOT NULL UNIQUE,
     Benutzername varchar(30) NOT NULL UNIQUE,
-    Passwort varchar(50) NOT NULL,
+    Passwort varchar(400) NOT NULL,
     -- Beim Insert wird das aktuelle Datum gesetzt
     Erfasst_am DATE NOT NULL DEFAULT current_date(),
     -- Bei Insert und Update wird das aktuelle Datetime gesetzt
     Letzte_Aktivitaet TIMESTAMP,
     -- Bei Anrede soll nur Herr oder Frau möglich sein
     CONSTRAINT CHECK_ANREDE check (Anrede in ('Herr','Frau')),
-    -- Passwort muss eine Länge zwischen 8 und 12 Zeichen haben
-    CONSTRAINT CHECK_PW check (CHAR_LENGTH (Passwort) >= 8 and CHAR_LENGTH (Passwort) <= 12),
     -- Email muss Format erfüllen: Mindestens -> 3Stellen + @ + 3Stellen + . + 2Stellen
     CONSTRAINT CHECK_EMAIL check (Email like '%___@___%.__%')
 ); 
@@ -269,11 +267,11 @@ use fremdsprachen;
 
 -- Insert für Tabelle Benutzer
 INSERT INTO benutzer(Anrede, Vorname, Nachname, Email, Benutzername, Passwort) 
-VALUES ('Frau','Angelina','Hofer','angel-sahara@hotmail.com','Angeli','Angi1234Angi');
+VALUES ('Frau','Angelina','Hofer','angel-sahara@hotmail.com','Angeli',SHA2('Angi1234Angi',256));
 INSERT INTO benutzer(Anrede, Vorname, Nachname, Email, Benutzername, Passwort) 
-VALUES ('Herr','Patrick','Tomasi','patrick.tomasi@gmx.ch','Paeddy','5678PDXYZ');
+VALUES ('Herr','Patrick','Tomasi','patrick.tomasi@gmx.ch','Paddy',SHA2('12345678',256));
 INSERT INTO benutzer(Anrede, Vorname, Nachname, Email, Benutzername, Passwort) 
-VALUES ('Herr','Matthias','Dueggelin','nex.nex@gmx.ch','NexNex','159159Nix');
+VALUES ('Herr','Matthias','Dueggelin','nex.nex@gmx.ch','NexNex',SHA2('159159Nix',256));
 
 
 -- Insert für Tabelle Sprachen
