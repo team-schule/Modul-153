@@ -45,7 +45,7 @@ SELECT * FROM Benutzer WHERE Benutzername = 'Angelo';
 -- Use-Case: Der Benutzer kann sich über E-Mail oder Benutzernamen identifizieren,
 -- daher darf auch die E-Mail-Adresse nur einmal in der Tabelle vorkommen
 -- ----------------------------------------------------------------------------------
--- Angabe einer ungültigen E-Mail beim Registrieren
+-- Angabe einer bereits existierenden E-Mail beim Registrieren
 INSERT INTO benutzer(Anrede, Vorname, Nachname, Email, Benutzername, Passwort) 
 VALUES ('Herr','Angelo','Schmid','Angi.schmid@schmidIT.ch','AngeloSupermann',SHA2('AngiSuperman',256));
 -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -
