@@ -1,4 +1,15 @@
 -- =====================================================================
+-- Ersteller der Datenbank:     Angelina Hofer, Patrick Tomasi
+-- E-Mail-Kontakt Ersteller:    angel-sahara@hotmail.com
+-- Details zur Datenbank:
+-- Server: 127.0.0.1 via TCP/IP
+-- Server-Typ: MariaDB
+-- Server-Verbindung: SSL wird nicht verwendet Dokumentation
+-- Server-Version: 10.4.6-MariaDB - mariadb.org binary distribution
+-- Protokoll-Version: 10
+-- Benutzer: root@localhost
+-- Server-Zeichensatz: cp1252 West European (latin1)
+-- =====================================================================
 -- INIT-Script
 -- Die Reihenfolge der Erstellungen ist so gewählt, dass es 
 -- keine Fehler gibt aufgrund der beiinhalteten Fremdschlüssel...
