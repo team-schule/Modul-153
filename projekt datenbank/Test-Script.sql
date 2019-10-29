@@ -356,3 +356,10 @@ SELECT * FROM Bibliotheken;
 SELECT * FROM Karteikarten;
 -- Erwartetes Ergebnis bei allen Tabellen werden alle Spalten angezeigt 
 -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -
+-- Use-Case: Der Datenbank benützer lernende darf kein Insert in den lernmodus machen
+-------------------------------------------------------------------------------------
+INSERT INTO bibliothek_to_lernmodus(FK_Bibliothek, FK_Lernmodus) 
+VALUES (5,1);
+-- Erwartetes Ergebnis: Die Datenbank darf ein Insert mit dem Benutzer lernender nicht zulassen.
+-------------------------------------------------------------------------------------------------
+-------------------------------------------------------------------------------------------------
