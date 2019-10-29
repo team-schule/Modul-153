@@ -33,6 +33,9 @@
 --      -> AFTER_INSERT_KARTEIKARTEN
 --      -> AFTER_UPDATE_KARTEIKARTEN
 --      -> AFTER_DELETE_KARTEIKARTEN
+--      -> AFTER_INSERT_BIBLIOTHEK
+--      -> AFTER_UPDATE_BIBLIOTHEK
+--      -> AFTER_DELETE_BIBLIOTHEK
 -- 4. Stored Procedure
 --      ->
 -- 5. Benutzer (User)
@@ -74,6 +77,7 @@ create table if not exists Benutzer
     Erfasst_am DATE NOT NULL DEFAULT current_date(),
     -- Bei Insert und Update wird das aktuelle Datetime gesetzt
     Letzte_Aenderung TIMESTAMP,
+    CONSTRAINT CHECK_PASSWORT check (length(PASSWORT) > 12),
     -- Bei Anrede soll nur Herr oder Frau möglich sein
     CONSTRAINT CHECK_ANREDE check (Anrede in ('Herr','Frau')),
     -- Email muss Format erfüllen: Mindestens -> 3Stellen + @ + 3Stellen + . + 2Stellen
@@ -291,10 +295,11 @@ END  //
 DELIMITER  ;
 -- =====================================================================
 
-
 -- =====================================================================
 -- 4. Erstellung der Stored Procedure
 -- ---------------------------------------------------------------------
+-- Konnte aus Zeitgründen leider nicht mehr erstellt werden
+
 
 -- =====================================================================
 -- 5. Erstellung der Benutzer (User) 

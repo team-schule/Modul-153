@@ -1,3 +1,16 @@
+-- =====================================================================
+-- Ersteller der Datenbank:     Angelina Hofer, Patrick Tomasi
+-- E-Mail-Kontakt Ersteller:    angel-sahara@hotmail.com
+-- Details zur Datenbank:
+-- Server: 127.0.0.1 via TCP/IP
+-- Server-Typ: MariaDB
+-- Server-Verbindung: SSL wird nicht verwendet Dokumentation
+-- Server-Version: 10.4.6-MariaDB - mariadb.org binary distribution
+-- Protokoll-Version: 10
+-- Benutzer: root@localhost
+-- Server-Zeichensatz: cp1252 West European (latin1)
+-- =====================================================================
+
 -- ================================================================================================
 -- Test-Script:
 -- Dieses Skript beinhaltet Test zu allen Datenbank-Objekten, welche erstellt wurden
@@ -93,6 +106,30 @@ VALUES ('Herr','Giorgio','Sorio','giorgio.sorio@abf.ch','Sorio',SHA2('ABFGoirgio
 -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -
 -- Abfrage um Eintrag des Benutzers zu prüfen
 SELECT * FROM Benutzer WHERE Benutzername = 'Sorio';
+-- ================================================================================================
+
+-- ================================================================================================
+-- Prüfung des Constraint 'CHECK_PASSWORT': 
+-- Use-Case: Passwort muss minimum 12 Stellen lang sein
+-- ----------------------------------------------------------------------------------
+-- Passwort zu wwenig lang
+INSERT INTO benutzer(Anrede, Vorname, Nachname, Email, Benutzername, Passwort) 
+VALUES ('Herr','Lukas','Gerber','lgerber.sorio@abf.ch','Luki','Luki');
+-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -
+-- Erwartetes Ergebnis in beiden Fällen:
+-- Ausgabe der Fehlermeldung 
+-- -> CONSTRAINT `CHECK_PASSWORT` fehlgeschlagen: `fremdsprachen`.`benutzer`
+--    und Datensatz wird nicht erstellt 
+-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -
+-- Use-Case: Passwort mit Hash bearbeiten
+INSERT INTO benutzer(Anrede, Vorname, Nachname, Email, Benutzername, Passwort) 
+VALUES ('Herr','Lukas','Gerber','lgerber.sorio@abf.ch','Luki',SHA2('Luki',256));
+-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -
+-- Erwartetes Ergebnis:
+-- Der Benutzer wird erstellt 
+-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -
+-- Abfrage um Eintrag des Benutzers zu prüfen
+SELECT * FROM Benutzer WHERE Benutzername = 'Luki';
 -- ================================================================================================
 
 -- ================================================================================================
