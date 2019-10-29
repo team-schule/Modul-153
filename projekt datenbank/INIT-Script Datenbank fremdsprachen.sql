@@ -18,20 +18,21 @@
 --      -> 'Uebungen'
 --      -> 'Bibliothek_to_Lernmodus'
 -- 3. Trigger 
---      -> 'ON_INSERT_BENUTZER'
+--      -> AFTER_INSERT_BENUTZER
+--      -> AFTER_INSERT_KARTEIKARTEN
+--      -> AFTER_UPDATE_KARTEIKARTEN
+--      -> AFTER_DELETE_KARTEIKARTEN
+-- 4. Stored Procedure
 --      ->
---      ->
--- 4. Views
---      ->
---      ->
---      ->
---      ->
--- 5. Stored Procedure
---      ->
--- 6. Benutzer (User)
---      ->
---      ->
--- 7. Füllen der Datenbank mit Testdaten
+-- 5. Benutzer (User)
+--      -> adminfremdsprachen@localhost
+--      -> lernende@localhost
+-- 6. Füllen der Datenbank mit Testdaten
+-- 7. Views
+--      -> V_KARTEN_PRO_SPRACHE
+--      -> V_LT_FRANZOESISCH
+--      -> V_LT_ITALIENISCH
+--      -> V_LT_ENGLISCH
 -- =====================================================================
 -- 1. Erstellung der Datenbank 
 -- ---------------------------------------------------------------------
@@ -61,7 +62,7 @@ create table if not exists Benutzer
     -- Beim Insert wird das aktuelle Datum gesetzt
     Erfasst_am DATE NOT NULL DEFAULT current_date(),
     -- Bei Insert und Update wird das aktuelle Datetime gesetzt
-    Letzte_Aktivitaet TIMESTAMP,
+    Letzte_Aenderung TIMESTAMP,
     -- Bei Anrede soll nur Herr oder Frau möglich sein
     CONSTRAINT CHECK_ANREDE check (Anrede in ('Herr','Frau')),
     -- Email muss Format erfüllen: Mindestens -> 3Stellen + @ + 3Stellen + . + 2Stellen
@@ -135,7 +136,7 @@ create table if not exists Bibliothek_to_Karte
     FK_Karte int NOT NULL,
     FK_Bibliothek int NOT NULL,
     CONSTRAINT FK_VERB_KARTE FOREIGN KEY (FK_Karte)
-    REFERENCES Karteikarten(Karten_NR),
+    REFERENCES Karteikarten(Karten_NR) on delete CASCADE,
     -- Dem Benutzer zugehörige Bibliotheken sollen beim Löschen 
     -- eines Benutzers auch gelöscht werden
     CONSTRAINT FK_VERB_BIBLIOTHEK FOREIGN KEY (FK_Bibliothek)
@@ -175,39 +176,117 @@ create table if not exists Bibliothek_to_Lernmodus
 );
 
 -- =====================================================================
--- 3. Erstellung der Trigger
+-- 3. Erstellung der Trigger AFTER_INSERT_BENUTZER
 -- ---------------------------------------------------------------------
 -- Trigger AFTER_INSERT_BENUTZER
 -- Erstellt bei neuem Eintrag in der Tabelle benutzer 
 -- einen Eintrag Bibliothek in der Tabelle bibliotheken,
 -- welcher als Beispiel dient
 DELIMITER  //
-CREATE TRIGGER `AFTER_INSERT_BENUTZER` AFTER INSERT ON `benutzer` 
+CREATE OR REPLACE TRIGGER `AFTER_INSERT_BENUTZER` AFTER INSERT ON `benutzer` 
 FOR EACH ROW 
 BEGIN
     INSERT INTO bibliotheken(Titel, Ebene, Position, FK_Benutzer) 
     VALUES ('Bibliothek',1,1,new.Benutzer_ID);
 END  // 
 DELIMITER  ;
+
 -- ---------------------------------------------------------------------
 -- Trigger AFTER_INSERT_KARTEIKARTEN
--- FK_Sprache_Karte ist gleich der Sprache in der Bibliothek
---
+-- Nach dem Erstellen einer neuen Karteikarte soll in der Tabelle 'Benutzer' 
+-- das Feld 'Letzte_Aenderung' aktuelisiert werden auf den aktuellen Timestamp
+DELIMITER  //
+CREATE OR REPLACE TRIGGER `AFTER_INSERT_KARTEIKARTEN` 
+AFTER INSERT ON Karteikarten
+FOR EACH ROW 
+BEGIN
+    UPDATE Benutzer SET Letzte_Aenderung = CURRENT_TIMESTAMP() where Benutzer_ID IN
+    (SELECT FK_Benutzer FROM Karteikarten WHERE Karten_NR = new.Karten_NR);
+END  // 
+DELIMITER  ;
 
-
--- =====================================================================
--- 4. Erstellung der Views
 -- ---------------------------------------------------------------------
--- Trigger AFTER_INSERT_BIBLIOTHEK
--- Soll bei einem neuen Eintrag in der Bibliothek die Felder
+-- Trigger AFTER_INSERT_KARTEIKARTEN
+-- Nach einer Änderrung an einer Karteikarte soll in der Tabelle 'Benutzer' 
+-- das Feld 'Letzte_Aenderung' aktuelisiert werden auf den aktuellen Timestamp
+DELIMITER  //
+CREATE OR REPLACE TRIGGER `AFTER_UPDATE_KARTEIKARTEN` 
+AFTER UPDATE ON Karteikarten
+FOR EACH ROW 
+BEGIN
+    UPDATE Benutzer SET Letzte_Aenderung = CURRENT_TIMESTAMP() where Benutzer_ID IN
+    (SELECT FK_Benutzer FROM Karteikarten WHERE Karten_NR = new.Karten_NR);
+END  // 
+DELIMITER  ;
+
+-- ---------------------------------------------------------------------
+-- Trigger AFTER_DELETE_KARTEIKARTEN
+-- Nach einer Änderrung an einer Karteikarte soll in der Tabelle 'Benutzer' 
+-- das Feld 'Letzte_Aenderung' aktuelisiert werden auf den aktuellen Timestamp
+DELIMITER  //
+CREATE OR REPLACE TRIGGER `BEFORE_DELETE_KARTEIKARTEN` 
+BEFORE DELETE ON Karteikarten
+FOR EACH ROW 
+BEGIN
+    UPDATE Benutzer SET Letzte_Aenderung = CURRENT_TIMESTAMP() where Benutzer_ID IN
+    (SELECT FK_Benutzer FROM Karteikarten WHERE Karten_NR = old.Karten_NR);
+END  // 
+DELIMITER  ;
+
+
+-- ---------------------------------------------------------------------
+-- Trigger AFTER_INSERT_BIBLIOTHEKEN
+-- Nach dem Erstellen einer neuen Karteikarte soll in der Tabelle 'Benutzer' 
+-- das Feld 'Letzte_Aenderung' aktuelisiert werden auf den aktuellen Timestamp
+DELIMITER  //
+CREATE OR REPLACE TRIGGER `AFTER_INSERT_BIBLIOTHEKEN` 
+AFTER INSERT ON Bibliotheken
+FOR EACH ROW 
+BEGIN
+    IF new.TITEL != 'Bibliothek' THEN
+        UPDATE Benutzer SET Letzte_Aenderung = CURRENT_TIMESTAMP() where Benutzer_ID IN
+        (SELECT FK_Benutzer FROM Bibliotheken WHERE Eintrags_NR = new.Eintrags_NR);
+    END IF;
+END  // 
+DELIMITER  ;
+
+-- ---------------------------------------------------------------------
+-- Trigger AFTER_UPDATE_BIBLIOTHEKEN
+-- Nach einer Änderrung an einer Karteikarte soll in der Tabelle 'Benutzer' 
+-- das Feld 'Letzte_Aenderung' aktuelisiert werden auf den aktuellen Timestamp
+DELIMITER  //
+CREATE OR REPLACE TRIGGER `AFTER_UPDATE_BIBLIOTHEKEN` 
+AFTER UPDATE ON Bibliotheken
+FOR EACH ROW 
+BEGIN
+    UPDATE Benutzer SET Letzte_Aenderung = CURRENT_TIMESTAMP() where Benutzer_ID IN
+    (SELECT FK_Benutzer FROM Bibliotheken WHERE Eintrags_NR = new.Eintrags_NR);
+END  // 
+DELIMITER  ;
+
+
+-- ---------------------------------------------------------------------
+-- Trigger BEFORE_DELETE_BIBLIOTHEKEN
+-- Nach einer Änderrung an einer Karteikarte soll in der Tabelle 'Benutzer' 
+-- das Feld 'Letzte_Aenderung' aktuelisiert werden auf den aktuellen Timestamp
+DELIMITER  //
+CREATE OR REPLACE TRIGGER `BEFORE_DELETE_BIBLIOTHEKEN` 
+BEFORE DELETE ON Bibliotheken
+FOR EACH ROW 
+BEGIN
+    UPDATE Benutzer SET Letzte_Aenderung = CURRENT_TIMESTAMP() where Benutzer_ID IN
+    (SELECT FK_Benutzer FROM Bibliotheken WHERE Eintrags_NR = old.Eintrags_NR);
+END  // 
+DELIMITER  ;
+-- =====================================================================
 
 
 -- =====================================================================
--- 5. Erstellung der Stored Procedure
+-- 4. Erstellung der Stored Procedure
 -- ---------------------------------------------------------------------
 
 -- =====================================================================
--- 6. Erstellung der Benutzer (User) 
+-- 5. Erstellung der Benutzer (User) 
 -- ---------------------------------------------------------------------
 
 -- Administrator für die Datenbank 'fremdsprachen'
@@ -255,7 +334,7 @@ TO lernende@localhost;
 FLUSH PRIVILEGES;
 
 -- =====================================================================
--- 7. Füllen der Datenbank mit Testdaten 
+-- 6. Füllen der Datenbank mit Testdaten 
 -- ---------------------------------------------------------------------
 
 -- Insert Script
@@ -305,7 +384,7 @@ VALUES ('Lückentexte');
 -- Insert für Tabelle Karteikarten ------------------------------------------
 -- Benutzer 1, Sprache Französisch 
 INSERT INTO karteikarten(Vorderseite, Rueckseite, FK_Benutzer, FK_Sprache)
-VALUES ('Hallo','Salue',1,1);
+VALUES ('Halloo','Salue',1,1);
 INSERT INTO karteikarten(Vorderseite, Rueckseite, FK_Benutzer, FK_Sprache)
 VALUES ('Guten Tag','Bonjour',1,1);
 INSERT INTO karteikarten(Vorderseite, Rueckseite, FK_Benutzer, FK_Sprache)
@@ -350,13 +429,13 @@ VALUES ('Apfel','apple',3,2);
 -- VALUES ('Bibliothek','Bibliothek',1,1,1); -- 1
 -- Sprache Französisch
 INSERT INTO bibliotheken(Titel, Ebene, Position, FK_Benutzer, FK_Bibliothek, FK_Sprache) 
-VALUES ('Französisch',2,1,1,1,2); -- 2
+VALUES ('Französisch',2,1,1,1,1); -- 2
 INSERT INTO bibliotheken(Titel, Ebene, Position, FK_Benutzer, FK_Bibliothek, FK_Sprache) 
-VALUES ('Essen',3,1,1,4,2); -- 3
+VALUES ('Essen',3,1,1,4,1); -- 3
 INSERT INTO bibliotheken(Titel, Ebene, Position, FK_Benutzer, FK_Bibliothek, FK_Sprache) 
-VALUES ('Begrüssung',3,2,1,4,2); -- 4
+VALUES ('Begrüssung',3,2,1,4,1); -- 4
 INSERT INTO bibliotheken(Titel, Ebene, Position, FK_Benutzer, FK_Bibliothek, FK_Sprache) 
-VALUES ('Lückentexte',3,3,1,4,2); -- 5
+VALUES ('Lückentexte',3,3,1,4,1); -- 5
 -- und Italienisch
 INSERT INTO bibliotheken(Titel, Ebene, Position, FK_Benutzer, FK_Bibliothek, FK_Sprache) 
 VALUES ('Italienisch',2,2,1,1,3); -- 6
@@ -405,37 +484,37 @@ VALUES ('Schreiben',3,5,3,17,1); -- 22
 
 -- Insert für Tabelle Bibliothek_to_Karte
 INSERT INTO bibliothek_to_karte(FK_Karte, FK_Bibliothek) 
-VALUES (1,4);
+VALUES (1,6);
 INSERT INTO bibliothek_to_karte(FK_Karte, FK_Bibliothek) 
-VALUES (2,4);
+VALUES (2,6);
 INSERT INTO bibliothek_to_karte(FK_Karte, FK_Bibliothek) 
-VALUES (3,3);
+VALUES (3,5);
 INSERT INTO bibliothek_to_karte(FK_Karte, FK_Bibliothek) 
-VALUES (4,3);
+VALUES (4,5);
 INSERT INTO bibliothek_to_karte(FK_Karte, FK_Bibliothek) 
-VALUES (5,7);
+VALUES (5,9);
 INSERT INTO bibliothek_to_karte(FK_Karte, FK_Bibliothek) 
-VALUES (7,7);
+VALUES (7,9);
 INSERT INTO bibliothek_to_karte(FK_Karte, FK_Bibliothek) 
-VALUES (6,8);
+VALUES (6,10);
 INSERT INTO bibliothek_to_karte(FK_Karte, FK_Bibliothek) 
-VALUES (8,8);
+VALUES (8,10);
 INSERT INTO bibliothek_to_karte(FK_Karte, FK_Bibliothek) 
 VALUES (9,13);
 INSERT INTO bibliothek_to_karte(FK_Karte, FK_Bibliothek) 
 VALUES (10,13);
 INSERT INTO bibliothek_to_karte(FK_Karte, FK_Bibliothek) 
-VALUES (11,12);
+VALUES (11,14);
 INSERT INTO bibliothek_to_karte(FK_Karte, FK_Bibliothek) 
-VALUES (12,12);
+VALUES (12,14);
 INSERT INTO bibliothek_to_karte(FK_Karte, FK_Bibliothek) 
-VALUES (15,17);
+VALUES (15,18);
 INSERT INTO bibliothek_to_karte(FK_Karte, FK_Bibliothek) 
-VALUES (16,17);
+VALUES (16,18);
 INSERT INTO bibliothek_to_karte(FK_Karte, FK_Bibliothek) 
-VALUES (13,18);
+VALUES (13,19);
 INSERT INTO bibliothek_to_karte(FK_Karte, FK_Bibliothek) 
-VALUES (14,18);
+VALUES (14,19);
 
 
 -- Insert für Tabelle Uebungen
@@ -466,3 +545,54 @@ VALUES (21,2);
 INSERT INTO bibliothek_to_lernmodus(FK_Bibliothek, FK_Lernmodus) 
 VALUES (22,3);
 
+
+-- =====================================================================
+-- 7. Erstellung der Views
+-- ---------------------------------------------------------------------
+-- View V_KARTEN_PRO_SPRACHE (Für Benutzer 1 und Sprache Französisch)
+-- Zeigt dem Benutzer mit Benutzer_ID alle Karten an, welche er unter der 
+-- Sprache Französisch gespeichert hat
+CREATE VIEW if not exists V_KARTEN_PRO_SPRACHE AS
+SELECT Vorderseite, Rueckseite FROM Karteikarten WHERE Karten_NR IN 
+    (SELECT FK_Karte FROM Bibliothek_to_karte WHERE FK_Bibliothek IN 
+        (SELECT Eintrags_NR FROM Bibliotheken WHERE FK_Benutzer = 1 AND FK_Sprache = 1));
+
+-- ---------------------------------------------------------------------
+-- View V_KARTEN_PRO_MENUE 
+-- (Für Benutzer 1 und Sprache Französisch und Menüpunkt = 'Essen')
+-- Zeigt dem Benutzer mit Benutzer_ID alle Karten an, welche er einem 
+-- bestimmten Menue gespeichert hat
+CREATE VIEW if not exists V_KARTEN_PRO_MENUE AS
+SELECT Vorderseite, Rueckseite FROM Karteikarten WHERE Karten_NR in 
+    (SELECT FK_Karte FROM Bibliothek_to_Karte where FK_Bibliothek in 
+        (SELECT Eintrags_NR FROM Bibliotheken WHERE Titel = 'Essen' 
+        and FK_Benutzer = 1 and FK_Sprache = 1));
+
+-- ---------------------------------------------------------------------
+-- View V_LT_FRANZOESISCH
+-- Holt die Lückentexte zur Sprache Französisch
+CREATE VIEW if not exists V_LT_FRANZOESISCH AS
+SELECT Aufgabe, Loesung FROM Uebungen 
+WHERE FK_Lernmodus IN 
+    (SELECT Lernmodus_ID FROM Lernmodus WHERE Titel = 'Lückentexte')
+AND FK_SPRACHE = 1;
+
+-- ---------------------------------------------------------------------
+-- View V_LT_ITALIENISCH
+-- Holt die Lückentexte zur Sprache Italienisch
+CREATE VIEW if not exists V_LT_ITALIENISCH AS
+SELECT Aufgabe, Loesung FROM Uebungen 
+WHERE FK_Lernmodus IN 
+    (SELECT Lernmodus_ID FROM Lernmodus WHERE Titel = 'Lückentexte')
+AND FK_SPRACHE = 3;
+
+-- ---------------------------------------------------------------------
+-- View V_LT_ENGLISCH
+-- Holt die Lückentexte zur Sprache Englisch
+CREATE VIEW if not exists V_LT_ENGLISCH AS
+SELECT Aufgabe, Loesung FROM Uebungen 
+WHERE FK_Lernmodus IN 
+    (SELECT Lernmodus_ID FROM Lernmodus WHERE Titel = 'Lückentexte')
+AND FK_SPRACHE = 2;
+
+-- =====================================================================

@@ -1,0 +1,153 @@
+-- --------------------------------------------------------
+-- Host:                         127.0.0.1
+-- Server Version:               10.4.6-MariaDB - mariadb.org binary distribution
+-- Server Betriebssystem:        Win64
+-- HeidiSQL Version:             10.2.0.5599
+-- --------------------------------------------------------
+
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET NAMES utf8 */;
+/*!50503 SET NAMES utf8mb4 */;
+/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
+/*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
+
+
+-- Exportiere Datenbank Struktur für fremdsprachen
+CREATE DATABASE IF NOT EXISTS `fremdsprachen` /*!40100 DEFAULT CHARACTER SET latin1 */;
+USE `fremdsprachen`;
+
+-- Exportiere Struktur von Tabelle fremdsprachen.benutzer
+CREATE TABLE IF NOT EXISTS `benutzer` (
+  `Benutzer_ID` int(11) NOT NULL AUTO_INCREMENT,
+  `Anrede` varchar(5) NOT NULL,
+  `Vorname` varchar(30) NOT NULL,
+  `Nachname` varchar(30) NOT NULL,
+  `Email` varchar(50) NOT NULL,
+  `Benutzername` varchar(30) NOT NULL,
+  `Passwort` varbinary(255) NOT NULL DEFAULT 'SHA1(str)',
+  `Erfasst_am` date NOT NULL DEFAULT curdate(),
+  `Letzte_Aktivitaet` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  PRIMARY KEY (`Benutzer_ID`),
+  UNIQUE KEY `Email` (`Email`),
+  UNIQUE KEY `Benutzername` (`Benutzername`),
+  CONSTRAINT `CHECK_ANREDE` CHECK (`Anrede` in ('Herr','Frau')),
+  CONSTRAINT `CHECK_EMAIL` CHECK (`Email` like '%___@___%.__%')
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+-- Daten Export vom Benutzer nicht ausgewählt
+
+-- Exportiere Struktur von Tabelle fremdsprachen.bibliotheken
+CREATE TABLE IF NOT EXISTS `bibliotheken` (
+  `Eintrags_NR` int(11) NOT NULL AUTO_INCREMENT,
+  `Titel` varchar(20) NOT NULL,
+  `Ebene` int(2) NOT NULL,
+  `Position` int(2) NOT NULL,
+  `FK_Benutzer` int(11) NOT NULL,
+  `FK_Bibliothek` int(11) DEFAULT NULL,
+  `FK_Sprache` int(11) DEFAULT NULL,
+  PRIMARY KEY (`Eintrags_NR`),
+  KEY `FK_BENUTZER_BIBLIOTHEK` (`FK_Benutzer`),
+  KEY `FK_BIBLIOTHEK_BIBLIOTHEK` (`FK_Bibliothek`),
+  KEY `FK_BIBLIOTHEK_SPRACHE` (`FK_Sprache`),
+  CONSTRAINT `FK_BENUTZER_BIBLIOTHEK` FOREIGN KEY (`FK_Benutzer`) REFERENCES `benutzer` (`Benutzer_ID`) ON DELETE CASCADE,
+  CONSTRAINT `FK_BIBLIOTHEK_BIBLIOTHEK` FOREIGN KEY (`FK_Bibliothek`) REFERENCES `bibliotheken` (`Eintrags_NR`) ON DELETE CASCADE,
+  CONSTRAINT `FK_BIBLIOTHEK_SPRACHE` FOREIGN KEY (`FK_Sprache`) REFERENCES `sprachen` (`Sprachen_ID`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+-- Daten Export vom Benutzer nicht ausgewählt
+
+-- Exportiere Struktur von Tabelle fremdsprachen.bibliothek_to_karte
+CREATE TABLE IF NOT EXISTS `bibliothek_to_karte` (
+  `Verbindungs_NR` int(11) NOT NULL AUTO_INCREMENT,
+  `FK_Karte` int(11) NOT NULL,
+  `FK_Bibliothek` int(11) NOT NULL,
+  PRIMARY KEY (`Verbindungs_NR`),
+  KEY `FK_VERB_KARTE` (`FK_Karte`),
+  KEY `FK_VERB_BIBLIOTHEK` (`FK_Bibliothek`),
+  CONSTRAINT `FK_VERB_BIBLIOTHEK` FOREIGN KEY (`FK_Bibliothek`) REFERENCES `bibliotheken` (`Eintrags_NR`) ON DELETE CASCADE,
+  CONSTRAINT `FK_VERB_KARTE` FOREIGN KEY (`FK_Karte`) REFERENCES `karteikarten` (`Karten_NR`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+-- Daten Export vom Benutzer nicht ausgewählt
+
+-- Exportiere Struktur von Tabelle fremdsprachen.bibliothek_to_lernmodus
+CREATE TABLE IF NOT EXISTS `bibliothek_to_lernmodus` (
+  `Verbindungs_NR` int(11) NOT NULL AUTO_INCREMENT,
+  `FK_Bibliothek` int(11) NOT NULL,
+  `FK_Lernmodus` int(11) NOT NULL,
+  PRIMARY KEY (`Verbindungs_NR`),
+  KEY `FK_LERNMODUS_BIBLIOTHEK` (`FK_Bibliothek`),
+  KEY `FK_BIBLOTHEK_LERNMODUS` (`FK_Lernmodus`),
+  CONSTRAINT `FK_BIBLOTHEK_LERNMODUS` FOREIGN KEY (`FK_Lernmodus`) REFERENCES `lernmodus` (`Lernmodus_ID`),
+  CONSTRAINT `FK_LERNMODUS_BIBLIOTHEK` FOREIGN KEY (`FK_Bibliothek`) REFERENCES `bibliotheken` (`Eintrags_NR`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+-- Daten Export vom Benutzer nicht ausgewählt
+
+-- Exportiere Struktur von Tabelle fremdsprachen.karteikarten
+CREATE TABLE IF NOT EXISTS `karteikarten` (
+  `Karten_NR` int(11) NOT NULL AUTO_INCREMENT,
+  `Vorderseite` varchar(100) DEFAULT NULL,
+  `Rueckseite` varchar(100) DEFAULT NULL,
+  `FK_Benutzer` int(11) DEFAULT NULL,
+  `FK_Sprache` int(11) DEFAULT NULL,
+  PRIMARY KEY (`Karten_NR`),
+  KEY `FK_BENUTZER_KARTE` (`FK_Benutzer`),
+  KEY `FK_SPRACHE_KARTE` (`FK_Sprache`),
+  CONSTRAINT `FK_BENUTZER_KARTE` FOREIGN KEY (`FK_Benutzer`) REFERENCES `benutzer` (`Benutzer_ID`) ON DELETE CASCADE,
+  CONSTRAINT `FK_SPRACHE_KARTE` FOREIGN KEY (`FK_Sprache`) REFERENCES `sprachen` (`Sprachen_ID`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+-- Daten Export vom Benutzer nicht ausgewählt
+
+-- Exportiere Struktur von Tabelle fremdsprachen.kategorien
+CREATE TABLE IF NOT EXISTS `kategorien` (
+  `Kategorie_ID` int(11) NOT NULL AUTO_INCREMENT,
+  `Kategorie` varchar(20) NOT NULL,
+  PRIMARY KEY (`Kategorie_ID`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+-- Daten Export vom Benutzer nicht ausgewählt
+
+-- Exportiere Struktur von Tabelle fremdsprachen.lernmodus
+CREATE TABLE IF NOT EXISTS `lernmodus` (
+  `Lernmodus_ID` int(11) NOT NULL AUTO_INCREMENT,
+  `Titel` varchar(20) NOT NULL,
+  `Beschreibung` varchar(200) DEFAULT NULL,
+  PRIMARY KEY (`Lernmodus_ID`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+-- Daten Export vom Benutzer nicht ausgewählt
+
+-- Exportiere Struktur von Tabelle fremdsprachen.sprachen
+CREATE TABLE IF NOT EXISTS `sprachen` (
+  `Sprachen_ID` int(11) NOT NULL AUTO_INCREMENT,
+  `Bezeichnung` varchar(20) NOT NULL,
+  PRIMARY KEY (`Sprachen_ID`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+-- Daten Export vom Benutzer nicht ausgewählt
+
+-- Exportiere Struktur von Tabelle fremdsprachen.uebungen
+CREATE TABLE IF NOT EXISTS `uebungen` (
+  `Uebungs_NR` int(11) NOT NULL AUTO_INCREMENT,
+  `Titel` varchar(20) DEFAULT NULL,
+  `Aufgabe` varchar(100) NOT NULL,
+  `Loesung` varchar(100) NOT NULL,
+  `FK_Sprache` int(11) NOT NULL,
+  `FK_Lernmodus` int(11) NOT NULL,
+  `FK_Kategorie` int(11) NOT NULL,
+  PRIMARY KEY (`Uebungs_NR`),
+  KEY `FK_SPRACHE_LUE` (`FK_Sprache`),
+  KEY `FK_MODUS_UEBUNGEN` (`FK_Lernmodus`),
+  KEY `FK_UBUNGEN_KAT` (`FK_Kategorie`),
+  CONSTRAINT `FK_MODUS_UEBUNGEN` FOREIGN KEY (`FK_Lernmodus`) REFERENCES `lernmodus` (`Lernmodus_ID`),
+  CONSTRAINT `FK_SPRACHE_LUE` FOREIGN KEY (`FK_Sprache`) REFERENCES `sprachen` (`Sprachen_ID`),
+  CONSTRAINT `FK_UBUNGEN_KAT` FOREIGN KEY (`FK_Kategorie`) REFERENCES `kategorien` (`Kategorie_ID`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+-- Daten Export vom Benutzer nicht ausgewählt
+
+/*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;
+/*!40014 SET FOREIGN_KEY_CHECKS=IF(@OLD_FOREIGN_KEY_CHECKS IS NULL, 1, @OLD_FOREIGN_KEY_CHECKS) */;
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
